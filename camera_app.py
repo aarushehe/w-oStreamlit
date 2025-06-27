@@ -5,7 +5,6 @@ from emotion_detector  import EmotionDetector
 import threading
 import csv
 from audio_analysis import start_audio_threads, get_current_audio_emotion
-from pymango import MangoClient
 from datetime import datetime
 
 emotions = ["angry", "disgust", "fear", "happy", "sad", "surprise", "neutral"]
