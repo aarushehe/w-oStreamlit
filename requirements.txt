@@ -7,3 +7,8 @@ webrtcvad
 pyaudio
 scikit-learn
 librosa
+deepface 
+dlib 
+imutils 
+scipy 
+pandas 
