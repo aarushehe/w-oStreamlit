@@ -5,10 +5,24 @@ from emotion_detector  import EmotionDetector
 import threading
 import csv
 from audio_analysis import start_audio_threads, get_current_audio_emotion
+from pymango import MangoClient
+from datetime import datetime
 
 emotions = ["angry", "disgust", "fear", "happy", "sad", "surprise", "neutral"]
 conf_em = ["neutral", "surprise", "angry", "happy"]
 anx_em = ["fear", "sad", "disgust"]
+
+def get_final_verdict(dominant_emotion, blink_rate, posture_state, voice_emotion):
+    score = 0
+    if dom_emotion in ["happy", "neutral", "surprise", "angry"]:
+        score += 1
+    if 10 <= blink_rate < 25:
+        score += 1
+    if posture_state == "Upright":
+        score += 1
+    if voice_emotion == "confident":
+        score += 1
+    return "Confident" if score >= 3 else "Anxious"
 
 def save_dictlist_csv(data, filename):
     if not data:
@@ -36,7 +50,7 @@ start_audio_threads()
 
 frame_log = {"timestamp": [], "posture": [], "audio_emotion": []}
 for e in emotion.EMOS: frame_log[e] = []
-cap = cv2.VideoCapture(0, cv2.CAP_ANY)
+cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 start = time.time()
 frame_no = 0
 
@@ -83,34 +97,33 @@ print(f"Saved {len(frame_log['timestamp'])} rows → {OUTPUT_FRAME_CSV}")
 print(f"Saved {len(blink.log)} blinks → {OUTPUT_BLINK_CSV}")
 
 
-# === SESSION SUMMARY ===
 df = pd.DataFrame(frame_log)
 
-# Posture summary
 from collections import Counter
 p_counts = Counter(df["posture"])
-upright_pct = p_counts.get("Upright", 0) / len(df) * 100 if len(df) else 0
+upright_like_frames = p_counts.get("Upright", 0) + p_counts.get("No person", 0)
+upright_pct = (upright_like_frames / len(df) * 100) if len(df) else 0
 dom_posture = "Upright" if upright_pct >= 20 else "Slouched"
 
-# Emotion summary
 emo_means = df[emotion.EMOS].mean()
 conf_score = sum(emo_means[e] for e in conf_em)
 anx_score  = sum(emo_means[e] for e in anx_em)
 dom_emotion = "Confident" if conf_score >= anx_score else "Anxious"
 
-# Blink summary
 total_blinks = blink.total
 duration_minutes = (df["timestamp"].iloc[-1] - df["timestamp"].iloc[0]) / 60
 blink_rate = total_blinks / duration_minutes if duration_minutes > 0 else 0
 
-# Final verdict based on dominant emotion + blink + posture
-final_state = dom_emotion
-if blink_rate > 30 or dom_posture == "Slouched":
-    final_state = "Anxious"
+if len(df["audio_emotion"]) > 0:
+    audio_counts = Counter(df["audio_emotion"])
+    dominant_audio_emotion = audio_counts.most_common(1)[0][0]
+else:
+    dominant_audio_emotion = "Unknown"
 
-# === DISPLAY SUMMARY ===
+final_state = get_final_verdict(dom_emotion, blink_rate, dom_posture, dominant_audio_emotion)
+
 print("\n=== LIVE SESSION SUMMARY ===")
-print("Posture counts       :", dict(p_counts))
+print(f"Dominant audio emotion: {dominant_audio_emotion}")
 print(f"Upright %            : {upright_pct:.1f}%")
 print(f"Dominant posture     : {dom_posture}")
 print("Average emotions     :")
