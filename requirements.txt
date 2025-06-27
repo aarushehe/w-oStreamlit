@@ -3,7 +3,6 @@ opencv-python
 numpy
 tensorflow
 mediapipe
-webrtcvad
 pyaudio
 scikit-learn
 librosa
