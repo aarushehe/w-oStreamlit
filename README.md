@@ -9,3 +9,7 @@ pip install -r requirements.txt
 And then write:
 
 python camera_app.py
+
+To run this project on streamlit, write:
+
+streamlit run st.py
