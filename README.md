@@ -12,4 +12,4 @@ python camera_app.py
 
 To run this project on streamlit, write:
 
-streamlit run st.py
+streamlit run streamlit.py
