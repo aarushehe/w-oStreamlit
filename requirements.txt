@@ -10,3 +10,5 @@ deepface
 dlib 
 imutils 
 scipy 
+streamlit-webrtc
+reportlab
