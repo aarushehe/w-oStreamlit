@@ -11,3 +11,4 @@ dlib
 imutils 
 scipy 
 streamlit-webrtc
+reportlab pandas
