@@ -77,9 +77,8 @@ def generate_summary_and_pdf(processor):
     dom_posture = "Upright" if upright_pct >= 20 else "Slouched"
 
     emo_means = df[emotion.EMOS].mean()
-    conf_score = sum(emo_means[e] for e in conf_em)
-    anx_score = sum(emo_means[e] for e in anx_em)
-    dom_emotion = "Confident" if conf_score >= anx_score else "Anxious"
+    dom_emotion_label = emo_means.idxmax()
+    dom_emotion = "Confident" if dom_emotion_label in conf_em else "Anxious"
 
     if len(df["timestamp"]) >= 2:
         duration_min = (df["timestamp"].iloc[-1] - df["timestamp"].iloc[0]) / 60
@@ -91,13 +90,13 @@ def generate_summary_and_pdf(processor):
     audio_counts = Counter(df["audio_emotion"])
     dom_audio = audio_counts.most_common(1)[0][0] if audio_counts else "Unknown"
 
-    verdict = get_final_verdict(dom_emotion, blink_rate, dom_posture, dom_audio)
+    verdict = get_final_verdict(dom_emotion_label, blink_rate, dom_posture, dom_audio)
 
     summary_data = {
         "Dominant Audio Emotion": dom_audio,
         "Dominant Posture": f"{dom_posture} ({upright_pct:.1f}%)",
         "Blink Rate": f"{blink_rate:.1f} blinks/min",
-        "Dominant Emotion (Visual)": dom_emotion,
+        "Dominant Emotion (Visual)": f"{dom_emotion_label} ({dom_emotion})",
         "Final Verdict": verdict,
         "Emotion Scores": emo_means.round(2).to_dict()
     }
