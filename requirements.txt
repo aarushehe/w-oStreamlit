@@ -11,8 +11,5 @@ dlib
 imutils 
 scipy 
 streamlit-webrtc
-<<<<<<< HEAD
 reportlab
-=======
-reportlab pandas
->>>>>>> 1beddd1e75f0d15c04814c472fdd1f8fd0cc0d46
+pandas
