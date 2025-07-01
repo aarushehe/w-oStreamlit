@@ -13,3 +13,4 @@ scipy
 streamlit-webrtc
 reportlab
 pandas
+pymongo
