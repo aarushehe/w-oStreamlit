@@ -14,3 +14,4 @@ streamlit-webrtc
 reportlab
 pandas
 pymongo
+openpyxl
