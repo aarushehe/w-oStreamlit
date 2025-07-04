@@ -20,3 +20,14 @@ py -3.10 -m venv tf-env
 pip install dlib-19.22.99-cp310-cp310-win_amd64.whl
 pip install tf-keras
 webrtcvad_wheels-2.0.14-cp310-cp310-win_amd64
+
+
+to start mongoDB manually - 
+
+in the terminal or the command prompt write the following commands -
+
+cd "path to the monogdb bin"
+
+then,
+
+>mongod.exe --dbpath ..\data\db
